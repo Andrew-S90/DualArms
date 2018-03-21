@@ -168,11 +168,16 @@ switch (_keyCode) do
 			else 
 			{
 				//Dual Arms Start
+				private _dialog = uiNameSpace getVariable ["RscDisplayInventory", displayNull];
+
 				if (secondaryWeapon player != "") then
 				{
 					if (((secondaryWeapon player) splitString "_") select ((count ((secondaryWeapon player) splitString "_"))-1) == "secondary") then 
 					{
-						(primaryWeapon player) spawn SecondaryWeapons_events_swapSecondaryWeapon;
+						if(!(SecondaryWeaponsSwapping) && (_dialog isEqualTo displayNull)) then
+						{
+							(primaryWeapon player) spawn SecondaryWeapons_events_swapSecondaryWeapon;
+						};
 					} else {
 						if (secondaryWeapon player != currentWeapon player) then
 						{
@@ -180,8 +185,12 @@ switch (_keyCode) do
 						};
 					};
 				} else {
-					if (primaryWeapon player != "") then {
-						(primaryWeapon player) call SecondaryWeapons_events_addSecondaryWeapon;
+					if (primaryWeapon player != "") then 
+					{
+						if(!(SecondaryWeaponsSwapping) && (_dialog isEqualTo displayNull)) then
+						{
+							(primaryWeapon player) call SecondaryWeapons_events_addSecondaryWeapon;
+						};
 					};
 				};
 				//Dual Arms End
