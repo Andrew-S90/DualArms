@@ -1,4 +1,6 @@
 /**
+ * ExileClient_gui_hud_event_onKeyUp
+ *
  * Exile Mod
  * www.exilemod.com
  * © 2015 Exile Mod Team
@@ -7,47 +9,84 @@
  * To view a copy of this license, visit http://creativecommons.org/licenses/by-nc-nd/4.0/.
  */
  
-private["_stopPropagation","_caller","_keyCode","_shiftState","_controlState","_altState","_posObject","_step"];
+private["_stopPropagation", "_caller", "_keyCode", "_shiftState", "_controlState", "_altState", "_posObject", "_step"];
 _stopPropagation = false;
 _caller = _this select 0;
 _keyCode = _this select 1;
 _shiftState = _this select 2;
 _controlState = _this select 3;
 _altState = _this select 4;
-if (_keyCode in (actionKeys 'TacticalView'))exitWith{true};
+if (_keyCode in (actionKeys "TacticalView")) exitWith {true};
+if (_keyCode in (actionKeys "User1") && !(_keyCode isEqualTo 0x02)) exitWith 
+{
+	if !(ExileClientIsHandcuffed) then 
+	{
+		call ExileClient_object_vehicle_interaction_keyLock;
+	};
+	true
+};
+if (_keyCode in (actionKeys "User2")) exitWith
+{
+	if (ExileClientAllowPartyMarkers) then 
+	{
+		if !(ExileClientPartyID isEqualTo -1) then 
+		{
+			if !(ExileClientIsHandcuffed) then 
+			{
+				call ExileClient_system_party_updateMyMarker;	
+			};
+		};
+	};
+	true
+};
+if (_keyCode in (actionKeys "User3")) exitWith
+{
+	ExileClientWaypoints = [];
+	true
+};
 switch (_keyCode) do  
 { 
-	case 0x29:	{ _stopPropagation = true; }; 
+	case 0x29:	
+	{ 
+		call ExileClient_gui_hud_toggleStatsBar;
+		_stopPropagation = true; 
+	}; 
+	case 0x11,
+	case 0x1E,
+	case 0x1F,
+	case 0x20:
+	{
+		if (ExileClientIsAutoRunning) then
+		{
+			call ExileClient_system_autoRun_stop;
+			_stopPropagation = true; 
+		};
+	};
 	case 0x0B:	 	
 	{ 
-		if ((vehicle player) isEqualTo player) then
+		if !(ExileClientIsHandcuffed) then 
 		{
-			if (ExileClientIsAutoRunning) then
+			if !(ExileIsPlayingRussianRoulette) then
 			{
-				false call ExileClient_gui_hud_toggleAutoRunIcon;
-				ExileClientIsAutoRunning = false;
-				player switchMove "";
-			}
-			else 
-			{
-				true call ExileClient_gui_hud_toggleAutoRunIcon;
-				ExileClientIsAutoRunning = true;
+				call ExileClient_system_autoRun_toggle;
 			};
 		};
 		_stopPropagation = true; 
 	};
-	case 0x08: 	{ _stopPropagation = true; };
+	case 0x08: 	
+	{ 
+		if (getText(missionConfigFile >> "Header" >> "gameType") isEqualTo "Escape") then 
+		{
+			player playMove "Exile_Funny_Dab01";
+		};
+		_stopPropagation = true; 
+	};
 	case 0x09: 	{ _stopPropagation = true; };
 	case 0x0A: 	{ _stopPropagation = true; };
 	case 0x3B: 	{ _stopPropagation = true; };
 	case 0x3C: 	{ _stopPropagation = true; };
 	case 0x3D:	{ _stopPropagation = true; };
 	case 0x3E:	{ _stopPropagation = true; };
-	case 0x3F:	
-	{ 
-		_stopPropagation = true; 
-	};
-	case 0x40: 	{ _stopPropagation = true; };
 	case 0x41: 	{ _stopPropagation = true; };
 	case 0x42:	{ _stopPropagation = true; };
 	case 0x43: 	{ _stopPropagation = true; };
@@ -57,22 +96,25 @@ switch (_keyCode) do
 	case 0x0E: 	{ _stopPropagation = true; };
 	case 0x02: 	
 	{ 
-		if (ExileClientIsInConstructionMode) then
+		if !(ExileClientIsHandcuffed || ExileIsPlayingRussianRoulette) then 
 		{
-			ExileClientConstructionObject setObjectTexture[0, "#(argb,2,2,1)color(0.7,0.93,0,0.6,ca)"];
-			ExileClientConstructionCurrentSnapToObject = objNull;
-			ExileClientConstructionIsInSelectSnapObjectMode = false;
-			ExileClientConstructionPossibleSnapPositions = [];
-			ExileClientConstructionMode = 1; 
-			[] call ExileClient_gui_constructionMode_update;
-		}
-		else 
-		{
-			if (primaryWeapon player != "") then
+			if (ExileClientIsInConstructionMode) then
 			{
-				if (primaryWeapon player != currentWeapon player) then
+				ExileClientConstructionObject setObjectTextureGlobal [0, "#(argb,2,2,1)color(0.7,0.93,0,0.6,ca)"];
+				ExileClientConstructionCurrentSnapToObject = objNull;
+				ExileClientConstructionIsInSelectSnapObjectMode = false;
+				ExileClientConstructionPossibleSnapPositions = [];
+				ExileClientConstructionMode = 1; 
+				[] call ExileClient_gui_constructionMode_update;
+			}
+			else 
+			{
+				if (primaryWeapon player != "") then
 				{
-					player selectWeapon (primaryWeapon player);
+					if (primaryWeapon player != currentWeapon player) then
+					{
+						player selectWeapon (primaryWeapon player);
+					};
 				};
 			};
 		};
@@ -80,22 +122,25 @@ switch (_keyCode) do
 	};
 	case 0x03: 	
 	{ 
-		if (ExileClientIsInConstructionMode) then
+		if !(ExileClientIsHandcuffed || ExileIsPlayingRussianRoulette) then 
 		{
-			ExileClientConstructionObject setObjectTexture[0, "#(argb,2,2,1)color(0.7,0.93,0,0.6,ca)"];
-			ExileClientConstructionCurrentSnapToObject = objNull;
-			ExileClientConstructionIsInSelectSnapObjectMode = false;
-			ExileClientConstructionPossibleSnapPositions = [];
-			ExileClientConstructionMode = 2; 
-			[] call ExileClient_gui_constructionMode_update;
-		}
-		else 
-		{
-			if (handgunWeapon player != "") then
+			if (ExileClientIsInConstructionMode) then
 			{
-				if (handgunWeapon player != currentWeapon player) then
+				ExileClientConstructionObject setObjectTextureGlobal [0, "#(argb,2,2,1)color(0.7,0.93,0,0.6,ca)"];
+				ExileClientConstructionCurrentSnapToObject = objNull;
+				ExileClientConstructionIsInSelectSnapObjectMode = false;
+				ExileClientConstructionPossibleSnapPositions = [];
+				ExileClientConstructionMode = 2; 
+				[] call ExileClient_gui_constructionMode_update;
+			}
+			else 
+			{
+				if (handgunWeapon player != "") then
 				{
-					player selectWeapon (handgunWeapon player);
+					if (handgunWeapon player != currentWeapon player) then
+					{
+						player selectWeapon (handgunWeapon player);
+					};
 				};
 			};
 		};
@@ -103,63 +148,72 @@ switch (_keyCode) do
 	};
 	case 0x04: 	
 	{ 
-		if (ExileClientIsInConstructionMode) then
+		if !(ExileClientIsHandcuffed || ExileIsPlayingRussianRoulette) then 
 		{
-			if (ExileClientConstructionSupportSnapMode) then
+			if (ExileClientIsInConstructionMode) then
 			{
-				if (ExileClientConstructionMode != 3) then 
+				if (ExileClientConstructionSupportSnapMode) then
 				{
-					ExileClientConstructionCurrentSnapToObject = objNull; 
-					ExileClientConstructionPossibleSnapPositions = [];
-					hintSilent "Look at the object you want to snap to, press SPACE to lock on it and then move your object next to a snap point. Press SPACE again to place object.";
-				};
-				ExileClientConstructionMode = 3; 
-				ExileClientConstructionIsInSelectSnapObjectMode = true;
-				[] call ExileClient_gui_constructionMode_update;
-			};
-		}
-		else 
-		{
-			//Dual Arms Start
-			if (secondaryWeapon player != "") then
-			{
-				if (((secondaryWeapon player) splitString "_") select ((count ((secondaryWeapon player) splitString "_"))-1) == "secondary") then 
-				{
-					(primaryWeapon player) spawn SecondaryWeapons_events_swapSecondaryWeapon;
-				} else {
-					if (secondaryWeapon player != currentWeapon player) then
+					if (ExileClientConstructionMode != 3) then 
 					{
-						player selectWeapon (secondaryWeapon player);
+						ExileClientConstructionCurrentSnapToObject = objNull; 
+						ExileClientConstructionPossibleSnapPositions = [];
+						["InfoTitleAndText", ["Snap Mode", "Look at the object you want to snap to, press SPACE to lock on it and then move your object next to a snap point. Press SPACE again to place the object."]] call ExileClient_gui_toaster_addTemplateToast;
+					};
+					ExileClientConstructionMode = 3; 
+					ExileClientConstructionIsInSelectSnapObjectMode = true;
+					[] call ExileClient_gui_constructionMode_update;
+				};
+			}
+			else 
+			{
+				//Dual Arms Start
+				if (secondaryWeapon player != "") then
+				{
+					if (((secondaryWeapon player) splitString "_") select ((count ((secondaryWeapon player) splitString "_"))-1) == "secondary") then 
+					{
+						(primaryWeapon player) spawn SecondaryWeapons_events_swapSecondaryWeapon;
+					} else {
+						if (secondaryWeapon player != currentWeapon player) then
+						{
+							player selectWeapon (secondaryWeapon player);
+						};
+					};
+				} else {
+					if (primaryWeapon player != "") then {
+						(primaryWeapon player) call SecondaryWeapons_events_addSecondaryWeapon;
 					};
 				};
-			} else {
-				if (primaryWeapon player != "") then {
-					(primaryWeapon player) call SecondaryWeapons_events_addSecondaryWeapon;
-				};
+				//Dual Arms End
 			};
-			//Dual Arms End
 		};
 		_stopPropagation = true; 
 	};
 	case 0x05: 	
 	{ 
-		if (ExileClientIsInConstructionMode) then
+		if !(ExileClientIsHandcuffed || ExileIsPlayingRussianRoulette) then 
 		{
-			ExileClientConstructionModePhysx = !ExileClientConstructionModePhysx;
-			[] call ExileClient_gui_constructionMode_update;
-		}
-		else
-		{
-			if (currentWeapon player != "") then
+			if (ExileClientIsInConstructionMode) then
 			{
-				ExileClientPlayerHolsteredWeapon = currentWeapon player;
-				player action["switchWeapon", player, player, 100];
-			}
-			else 
-			{
-				if (ExileClientPlayerHolsteredWeapon != "") then
+				if !(ExileClientConstructionKitClassName isEqualTo "Exile_Item_Flag") then 
 				{
-					player selectWeapon ExileClientPlayerHolsteredWeapon;
+					ExileClientConstructionModePhysx = !ExileClientConstructionModePhysx;
+					[] call ExileClient_gui_constructionMode_update;
+				};
+			}
+			else
+			{
+				if (currentWeapon player != "") then
+				{
+					ExileClientPlayerHolsteredWeapon = currentWeapon player;
+					player action["switchWeapon", player, player, 100];
+				}
+				else 
+				{
+					if (ExileClientPlayerHolsteredWeapon != "") then
+					{
+						player selectWeapon ExileClientPlayerHolsteredWeapon;
+					};
 				};
 			};
 		};
@@ -180,30 +234,40 @@ switch (_keyCode) do
 	};
 	case 0x07:
 	{
-		if (ExileClientIsInConstructionMode) then
+		if (getText(missionConfigFile >> "Header" >> "gameType") isEqualTo "Escape") then 
 		{
-			if(ExileClientConstructionLock)then
+			if (alive player) then
 			{
-				ExileClientConstructionLock = false;
-				_posObject = position ExileClientConstructionObject;
-				ExileClientConstructionOffset = player worldToModel _posObject;
-				ExileClientConstructionRotation = (getDir ExileClientConstructionObject) - (getDir player);
-			}
-			else
-			{
-				ExileClientConstructionLock = true;
+				[] call ExileClient_gui_hud_toggleEscapeStats;
 			};	
 		}
 		else
 		{
-			if (!ExileClientXM8IsVisible) then
+			if (ExileClientIsInConstructionMode) then
 			{
-				if ("Exile_Item_XM8" in (assignedItems player)) then
+				if(ExileClientConstructionLock)then
 				{
-					if (alive player) then
+					ExileClientConstructionLock = false;
+					_posObject = position ExileClientConstructionObject;
+					ExileClientConstructionOffset = player worldToModel _posObject;
+					ExileClientConstructionRotation = (getDir ExileClientConstructionObject) - (getDir player);
+				}
+				else
+				{
+					ExileClientConstructionLock = true;
+				};	
+			}
+			else
+			{
+				if (!ExileClientXM8IsVisible) then
+				{
+					if ("Exile_Item_XM8" in (assignedItems player)) then
 					{
-						[] call ExileClient_gui_xm8_show;
-					};	
+						if (alive player) then
+						{
+							[] call ExileClient_gui_xm8_show;
+						};	
+					};
 				};
 			};
 		};
@@ -211,16 +275,33 @@ switch (_keyCode) do
 	};
 	case 0x39:
 	{
-		if (ExileClientIsInConstructionMode) then
+		if (ExileIsPlayingRussianRoulette) then
 		{
-			if (ExileClientConstructionMode == 3) then 
+			if (ExileRussianRouletteCanFire) then 
 			{
-				if (ExileClientConstructionIsInSelectSnapObjectMode) then 
+				[] spawn ExileClient_system_russianRoulette_fire;
+			};
+		}
+		else 
+		{
+			if (ExileClientIsInConstructionMode) then
+			{
+				if (ExileClientConstructionMode == 3) then 
 				{
-					if !(isNull ExileClientConstructionCurrentSnapToObject) then
+					if (ExileClientConstructionIsInSelectSnapObjectMode) then 
 					{
-						ExileClientConstructionIsInSelectSnapObjectMode = false;
-						[] call ExileClient_gui_constructionMode_update;
+						if !(isNull ExileClientConstructionCurrentSnapToObject) then
+						{
+							ExileClientConstructionIsInSelectSnapObjectMode = false;
+							[] call ExileClient_gui_constructionMode_update;
+						};
+					}
+					else 
+					{
+						if (ExileClientConstructionCanPlaceObject) then
+						{
+							ExileClientConstructionResult = 1;
+						};
 					};
 				}
 				else 
@@ -230,22 +311,22 @@ switch (_keyCode) do
 						ExileClientConstructionResult = 1;
 					};
 				};
-			}
-			else 
-			{
-				if (ExileClientConstructionCanPlaceObject) then
-				{
-					ExileClientConstructionResult = 1;
-				};
+				_stopPropagation = true;
 			};
-			_stopPropagation = true;
 		};
 	};
 	case 0x01:
 	{
-		if (ExileClientIsInConstructionMode) then
+		if (ExileIsPlayingRussianRoulette) then 
 		{
 			_stopPropagation = true;
+		}
+		else 
+		{
+			if (ExileClientIsInConstructionMode) then
+			{
+				_stopPropagation = true;
+			};
 		};
 	};
 	case 0x10:
@@ -287,6 +368,30 @@ switch (_keyCode) do
 			};
 			ExileClientConstructionRotation = (ExileClientConstructionRotation + _step + 360) % 360;	
 			[] call ExileClient_gui_constructionMode_update;
+			_stopPropagation = true;
+		};
+	};
+	case 0x19:
+	{
+		if (ExileClientIsInBush) then
+		{
+			call ExileClient_object_bush_detach;
+			_stopPropagation = true;
+		};
+	};
+	case 0x31:
+	{
+		if!(isNull ExileClientCameraParentObject)then
+		{
+			if(ExileClientCameraNVG)then
+			{
+				camUseNVG false;
+			}
+			else
+			{
+				camUseNVG true;
+			};	
+			ExileClientCameraNVG = !ExileClientCameraNVG;
 			_stopPropagation = true;
 		};
 	};
@@ -373,6 +478,16 @@ switch (_keyCode) do
 			[] call ExileClient_gui_constructionMode_update;
 			_stopPropagation = true;
 		};
+	};
+	case 0xDB:
+	{
+		switch (ExilePartyEspMode) do 
+		{
+			case 0: 		{ ExilePartyEspMode = 1; };
+			case 1: 	{ ExilePartyEspMode = 2; };
+			case 2: 			{ ExilePartyEspMode = 0; };
+		};
+		_stopPropagation = true;
 	};
 };
 _stopPropagation
