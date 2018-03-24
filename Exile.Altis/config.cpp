@@ -23,6 +23,7 @@ class CfgExileCustomCode
 	ExileClient_object_player_event_onKilled = "custom\dual_arms\ExileClient_object_player_event_onKilled.sqf";
 	ExileClient_object_player_event_onTake = "custom\dual_arms\ExileClient_object_player_event_onTake.sqf";
 	ExileClient_gui_hud_event_onKeyUp = "custom\dual_arms\ExileClient_gui_hud_event_onKeyUp.sqf";
+	ExileClient_gui_traderDialog_updateInventoryListBox = "custom\dual_arms\ExileClient_gui_traderDialog_updateInventoryListBox.sqf";
 	
 	//Dual Arms Server
 	ExileServer_system_network_event_onHandleDisconnect = "custom\dual_arms\ExileServer_system_network_event_onHandleDisconnect.sqf";
