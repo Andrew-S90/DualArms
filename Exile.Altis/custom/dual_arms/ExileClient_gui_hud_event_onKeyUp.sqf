@@ -189,7 +189,7 @@ switch (_keyCode) do
 					{
 						if(!(SecondaryWeaponsSwapping) && (_dialog isEqualTo displayNull)) then
 						{
-							(primaryWeapon player) call SecondaryWeapons_events_addSecondaryWeapon;
+							(primaryWeapon player) spawn SecondaryWeapons_events_addSecondaryWeapon;
 						};
 					};
 				};
