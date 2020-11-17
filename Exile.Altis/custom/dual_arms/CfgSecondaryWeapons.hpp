@@ -3,8 +3,10 @@ class CfgSecondaryWeapons
 	//Mod Settings
 	DropWeaponOnDeath = "true";
 	UseAddActions = "false";
+	UseInventoryButtons = "false";
 	
-	SecondaryWeaponsBlockedWeapons[] = {
+	SecondaryWeaponsBlockedWeapons[] = 
+	{
 		"cup_arifle_mega_sniper",
 		"cup_arifle_big_sniper"
 	};

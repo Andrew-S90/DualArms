@@ -3,7 +3,7 @@
  *
  * Dual Arms Mod
  * Contact: Andrew#0693 on Discord
- * © 2018 Andrew_S90
+ * © 2020 Andrew_S90
  *
  * This mod may be used in private repos for units but reuploads on steam/armaholic/playwithsix are not allowed.
  *
@@ -28,7 +28,7 @@
 		SecondaryWeaponsClassName = (secondaryWeapon player);
 	};
 	
-	//This is important, for use in Exile this override needs to happen do not uncomment these!!
+	//DO NOT Uncomment these!!
 	
 	//SecondaryWeapons_InventoryOpened_EH = player addEventHandler ["InventoryOpened", { _this call SecondaryWeapons_events_onInventoryOpened}];
 	//SecondaryWeapons_InventoryClosed_EH = player addEventHandler ["InventoryClosed", { _this call SecondaryWeapons_events_onInventoryClosed}];

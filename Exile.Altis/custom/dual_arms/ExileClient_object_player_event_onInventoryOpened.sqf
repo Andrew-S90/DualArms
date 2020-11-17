@@ -61,8 +61,6 @@ try
 
 	_dialog = uiNameSpace getVariable ["RscDisplayInventory", displayNull];
 
-
-
 	_BG = _dialog displayCtrl 1247;
 	_slot = _dialog displayCtrl 611;
 	_prim = _dialog displayCtrl 610;
@@ -77,14 +75,17 @@ try
 	SecondaryWeaponsInventoryPosition = _posSlot;
 	_posBtn = ctrlPosition _prim;
 	
-	_buttonDown = _dialog ctrlCreate ["RscActivePictureDown", 1337];
-	_buttonDown ctrlSetPosition [((_posBtn select 0) + (_posBtn select 2) - 0.03), (_posBtn select 1),(_posBtn select 2)/12,(_posBtn select 3)];
-	_buttonDown ctrlCommit 0;
-	
-	_buttonUp = _dialog ctrlCreate ["RscActivePictureUp", 6969];
-	_buttonUp ctrlSetPosition [((_posSlot select 0) + (_posSlot select 2) - 0.03), (_posSlot select 1),(_posSlot select 2)/12,(_posSlot select 3)];
-	_buttonUp ctrlEnable (SecondaryWeaponsClassName != "");
-	_buttonUp ctrlCommit 0;
+	if(SecondaryWeaponsInventoryIcons) then
+	{
+		_buttonDown = _dialog ctrlCreate ["RscActivePictureDown", 1337];
+		_buttonDown ctrlSetPosition [((_posBtn select 0) + (_posBtn select 2) - 0.03), (_posBtn select 1),(_posBtn select 2)/12,(_posBtn select 3)];
+		_buttonDown ctrlCommit 0;
+		
+		_buttonUp = _dialog ctrlCreate ["RscActivePictureUp", 6969];
+		_buttonUp ctrlSetPosition [((_posSlot select 0) + (_posSlot select 2) - 0.03), (_posSlot select 1),(_posSlot select 2)/12,(_posSlot select 3)];
+		_buttonUp ctrlEnable (SecondaryWeaponsClassName != "");
+		_buttonUp ctrlCommit 0;
+	};
 
 	if (((secondaryWeapon player) !="") && {((secondaryWeapon player) splitString "_") select ((count ((secondaryWeapon player) splitString "_"))-1) == "secondary"}) then 
 	{
@@ -95,7 +96,7 @@ try
 		_cover ctrlSetPosition _posSlot;
 		_cover ctrlSetBackgroundColor [0.7,0.7,0.7,0.1];
 		_cover ctrlCommit 0;
-			   
+		
 		_pic = _dialog ctrlCreate ["RscPictureKeepAspect", 1531];
 
 		_pic ctrlSetPosition _posSlot;
