@@ -2,7 +2,7 @@ class CfgSecondaryWeapons
 {
 	//Mod Settings
 	DropWeaponOnDeath = "true";
-	UseAddActions = "false";
+	UseAddActions = "true";
 	UseInventoryButtons = "false";
 	
 	SecondaryWeaponsBlockedWeapons[] = 
