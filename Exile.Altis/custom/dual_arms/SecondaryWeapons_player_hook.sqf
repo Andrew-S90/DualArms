@@ -16,6 +16,7 @@
 {
 	waitUntil {!isNull (findDisplay 46) && (alive player)};
 	diag_log "SecondaryWeapons_hook Fired";
+	uiSleep 3;
 	
 	SecondaryWeaponsSwapSecond = player addAction [format["Weapon %1", getText (configFile >> "CfgWeapons" >> (secondaryWeapon player) >> "displayName")], { [] call SecondaryWeapons_SwitchToSecondary; } , "", 1.5, false, true, "", "(((secondaryWeapon player) !="""") && { (secondaryWeapon player != currentWeapon player) && {(((secondaryWeapon player) splitString ""_"") select ((count ((secondaryWeapon player) splitString ""_""))-1) != ""secondary"")}})", 0];
 	if(SecondaryWeaponsAddAction) then
@@ -24,8 +25,43 @@
 		SecondaryWeaponsSwapPrimary = player addAction [format["Swap to Weapon %1", getText (configFile >> "CfgWeapons" >> (secondaryWeapon player) >> "displayName")], { (primaryWeapon player) spawn SecondaryWeapons_events_swapSecondaryWeapon; } , "", 1.7, false, true, "", "((SecondaryWeaponsClassName !="""") && { ((isClass (configFile >> ""CfgWeapons"" >> format[""%1%2"",primaryWeapon player,""_secondary""])) || (primaryWeapon player == ""))})", 0];
 	};
 	
-	if (((secondaryWeapon player) !="") && {((secondaryWeapon player) splitString "_") select ((count ((secondaryWeapon player) splitString "_"))-1) == "secondary"}) then {
+	if (((secondaryWeapon player) !="") && {((secondaryWeapon player) splitString "_") select ((count ((secondaryWeapon player) splitString "_"))-1) == "secondary"}) then 
+	{
 		SecondaryWeaponsClassName = (secondaryWeapon player);
+	};
+	
+	if (SecondaryWeaponsClassName != "") then
+	{
+		private _secondaryInfoRaw = (getUnitLoadout player) select 1;
+		private _secondaryInfo = [];
+		if (count _secondaryInfoRaw > 0) then
+		{
+			{
+				if (typeName _x == "ARRAY") then
+				{
+					if (count _x > 0) then
+					{
+						_secondaryInfo pushBack [([(_x select 0), 0, -10] call BIS_fnc_trimString),(_x select 1)];
+					}
+					else
+					{
+						_secondaryInfo pushBack _x;
+					};
+				}
+				else
+				{
+					if !(_x isEqualTo "") then
+					{
+						_secondaryInfo pushBack ([_x, 0, -10] call BIS_fnc_trimString);
+					}
+					else
+					{
+						_secondaryInfo pushBack _x;
+					};
+				};
+			} forEach _secondaryInfoRaw;
+			SecondaryWeaponsSecondaryItems = _secondaryInfo;
+		};
 	};
 	
 	//DO NOT Uncomment these!!
